@@ -37,8 +37,12 @@ func UTF16toString(p *uint16) string {
 func main() {
 	wtsapi32DLL := windows.NewLazySystemDLL("Wtsapi32.dll")
 	WTSEnumerateProcesses := wtsapi32DLL.NewProc("WTSEnumerateProcessesW")
+
 	var processListing *WTS_PROCESS_INFO
 	var processCount uint32 = 0
+
+	defer windows.WTSFreeMemory(uintptr(unsafe.Pointer(&processListing)))
+
 	_, _, err := WTSEnumerateProcesses.Call(uintptr(0), 0, 1, uintptr(unsafe.Pointer(&processListing)),
 		uintptr(unsafe.Pointer(&processCount)))
 
